@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+build/
+
+# User downloads (don't commit extracted conversations)
+/downloads/
+*.pdf
+*.md
+!README.md
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Env & logs
+.env
+*.log
+*.tmp
+
+# Backups
+*.bak
+*.backup
