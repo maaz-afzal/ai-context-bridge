@@ -17,9 +17,5 @@ const extractorMap: Record<string, new () => ChatExtractor> = {
 
 export const getExtractor = (platform: string): ChatExtractor | null => {
   const Extractor = extractorMap[platform];
-  if (Extractor) {
-    return new Extractor();
-  }
-  console.warn(`No extractor found for platform: ${platform}`);
-  return null;
+  return Extractor ? new Extractor() : null;
 };

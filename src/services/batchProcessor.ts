@@ -1,5 +1,5 @@
 import { Conversation } from '../types';
-import JSZip from 'jszip'; // Install: npm install jszip
+import JSZip from 'jszip';
 
 export class BatchProcessor {
   async exportMultiple(conversations: Conversation[]): Promise<Blob> {
@@ -10,7 +10,7 @@ export class BatchProcessor {
       zip.file(fileName, JSON.stringify(conv, null, 2));
     }
 
-    return await zip.generateAsync({ type: 'blob' });
+    return zip.generateAsync({ type: 'blob' });
   }
 
   async importMultiple(file: File): Promise<Conversation[]> {
@@ -20,7 +20,7 @@ export class BatchProcessor {
     for (const [name, content] of Object.entries(zip.files)) {
       if (name.endsWith('.json')) {
         const json = await content.async('string');
-        conversations.push(JSON.parse(json));
+        conversations.push(JSON.parse(json) as Conversation);
       }
     }
 

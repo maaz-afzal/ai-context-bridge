@@ -1,4 +1,5 @@
 import { Conversation, Message, ChatExtractor } from '../types';
+import { cleanContent, generateMessageId } from '../utils/extractorUtils';
 
 export class PerplexityExtractor implements ChatExtractor {
   detect(): boolean {
@@ -7,20 +8,13 @@ export class PerplexityExtractor implements ChatExtractor {
 
   async extractConversation(): Promise<Conversation> {
     const messages: Message[] = [];
-    const messageNodes = document.querySelectorAll('div.chat-message');
 
-    messageNodes.forEach((node, i) => {
-      const role = node.classList.contains('user') ? 'user' : 'assistant';
-      const content =
-        node.querySelector('div.message-content')?.textContent || node.textContent || '';
+    document.querySelectorAll('div.chat-message').forEach((node, i) => {
+      const role: 'user' | 'assistant' = node.classList.contains('user') ? 'user' : 'assistant';
+      const content = cleanContent(node.querySelector('div.message-content')?.textContent ?? node.textContent ?? '');
 
-      if (content.trim() && content.length > 10) {
-        messages.push({
-          id: `perplexity-${i}`,
-          role,
-          content: this.cleanContent(content),
-          timestamp: new Date().toISOString(),
-        });
+      if (content.length > 10) {
+        messages.push({ id: generateMessageId(role, content) || `perplexity-${i}`, role, content, timestamp: new Date().toISOString() });
       }
     });
 
@@ -28,11 +22,7 @@ export class PerplexityExtractor implements ChatExtractor {
       platform: 'perplexity',
       exportedAt: new Date().toISOString(),
       messages,
-      title: document.title.replace(' - Perplexity', '').trim(),
+      title: document.title.replace(' - Perplexity', '').trim() || 'Perplexity Conversation',
     };
-  }
-
-  private cleanContent(content: string): string {
-    return content.replace(/\s+/g, ' ').trim();
   }
 }

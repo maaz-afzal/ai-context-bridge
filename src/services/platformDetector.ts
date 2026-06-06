@@ -14,8 +14,7 @@ export const detectPlatform = (url: string | undefined): Platform | null => {
     if (host.includes('deepseek.com')) return 'deepseek';
 
     return null;
-  } catch (error) {
-    console.warn('Failed to parse URL:', url, error);
+  } catch {
     return null;
   }
 };

@@ -16,16 +16,7 @@ const injectorMap: Record<Platform, (text: string) => boolean> = {
 };
 
 export const injectContext = (platform: Platform, text: string): boolean => {
-  console.log(`Injecting context into ${platform}...`);
-  console.log(`Text length: ${text.length} characters`);
-
   const injector = injectorMap[platform];
-  if (!injector) {
-    console.error(`No injector found for platform: ${platform}`);
-    return false;
-  }
-
-  const result = injector(text);
-  console.log(`Injection ${result ? 'successful' : 'failed'}`);
-  return result;
+  if (!injector) return false;
+  return injector(text);
 };

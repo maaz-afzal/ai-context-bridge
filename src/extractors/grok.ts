@@ -1,30 +1,22 @@
 import { Conversation, Message, ChatExtractor } from '../types';
+import { cleanContent, generateMessageId } from '../utils/extractorUtils';
 
 export class GrokExtractor implements ChatExtractor {
   detect(): boolean {
-    return (
-      window.location.hostname.includes('grok.com') || window.location.hostname.includes('x.com')
-    );
+    return window.location.hostname.includes('grok.com') || window.location.hostname.includes('x.com');
   }
 
   async extractConversation(): Promise<Conversation> {
     const messages: Message[] = [];
-    const messageEls = document.querySelectorAll(
-      '[data-message-author-role], [class*="UserMessage"], [class*="AssistantMessage"]'
-    );
 
-    messageEls.forEach((node, i) => {
+    document.querySelectorAll('[data-message-author-role], [class*="UserMessage"], [class*="AssistantMessage"]').forEach((node, i) => {
       const roleAttr = node.getAttribute('data-message-author-role');
       const isUser = roleAttr === 'user' || node.className.toLowerCase().includes('user');
-      const content = node.textContent?.trim() ?? '';
+      const content = cleanContent(node.textContent ?? '');
 
-      if (content && content.length > 10) {
-        messages.push({
-          id: `grok-${i}`,
-          role: isUser ? 'user' : 'assistant',
-          content: this.cleanContent(content),
-          timestamp: new Date().toISOString(),
-        });
+      if (content.length > 10) {
+        const role: 'user' | 'assistant' = isUser ? 'user' : 'assistant';
+        messages.push({ id: generateMessageId(role, content) || `grok-${i}`, role, content, timestamp: new Date().toISOString() });
       }
     });
 
@@ -32,11 +24,7 @@ export class GrokExtractor implements ChatExtractor {
       platform: 'grok',
       exportedAt: new Date().toISOString(),
       messages,
-      title: document.title.replace(' | Grok', '').trim(),
+      title: document.title.replace(' | Grok', '').trim() || 'Grok Conversation',
     };
-  }
-
-  private cleanContent(content: string): string {
-    return content.replace(/\s+/g, ' ').trim();
   }
 }
