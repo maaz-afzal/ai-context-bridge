@@ -7,18 +7,12 @@ import path from 'path';
 export default defineConfig({
   plugins: [react(), crx({ manifest })],
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+    alias: { '@': path.resolve(__dirname, './src') },
   },
   build: {
     rollupOptions: {
-      input: {
-        popup: path.resolve(__dirname, 'src/popup/index.html'),
-      },
+      input: { popup: path.resolve(__dirname, 'src/popup/index.html') },
     },
   },
-  server: {
-    port: 5173,
-  },
+  server: { port: 5173 },
 });

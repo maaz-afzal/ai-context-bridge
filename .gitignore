@@ -1,15 +1,19 @@
 # Dependencies
 node_modules/
 
-# Build
+# Build output
 dist/
 build/
 
-# User downloads (don't commit extracted conversations)
+# Vite internal cache files (never commit these)
+*.timestamp-*.mjs
+
+# User downloads
 /downloads/
 *.pdf
 *.md
 !README.md
+!CONTRIBUTING.md
 
 # IDE & OS
 .vscode/

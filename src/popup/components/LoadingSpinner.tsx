@@ -1,15 +1,10 @@
-// src/popup/components/LoadingSpinner.tsx
-import React from 'react';
-
-interface LoadingSpinnerProps {
+interface Props {
   message?: string;
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ message = 'Loading...' }) => {
-  return (
-    <div className="flex flex-col items-center justify-center py-8">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-      <p className="text-gray-600">{message}</p>
-    </div>
-  );
-};
+export const LoadingSpinner = ({ message = 'Loading...' }: Props) => (
+  <div className="flex flex-col items-center justify-center py-8">
+    <div className="w-12 h-12 mb-4 border-b-2 border-blue-500 rounded-full animate-spin" />
+    <p className="text-gray-600">{message}</p>
+  </div>
+);

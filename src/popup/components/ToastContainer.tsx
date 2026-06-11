@@ -1,61 +1,65 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { Toast } from '../../types';
 
-export interface Toast {
-  id: string;
-  type: 'success' | 'error' | 'info' | 'warning';
-  message: string;
-}
-
-interface ToastContainerProps {
+interface Props {
   toasts: Toast[];
   onRemove: (id: string) => void;
   duration?: number;
 }
 
-export const ToastContainer: React.FC<ToastContainerProps> = ({
-  toasts,
-  onRemove,
-  duration = 2000,
-}) => {
-  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+const STYLES: Record<Toast['type'], string> = {
+  success: 'bg-green-500',
+  error: 'bg-red-500',
+  warning: 'bg-yellow-500',
+  info: 'bg-blue-500',
+};
 
-  useEffect(() => {
-    // Cleanup all timers on unmount
-    return () => {
-      timersRef.current.forEach((timer) => clearTimeout(timer));
-      timersRef.current.clear();
-    };
-  }, []);
+const ICONS: Record<Toast['type'], string> = {
+  success: '✓',
+  error: '✗',
+  warning: '⚠',
+  info: 'ℹ',
+};
+
+export const ToastContainer = ({ toasts, onRemove, duration = 1500 }: Props) => {
+  const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  useEffect(
+    () => () => {
+      timers.current.forEach(clearTimeout);
+    },
+    []
+  );
 
   useEffect(() => {
     for (const toast of toasts) {
-      if (!timersRef.current.has(toast.id)) {
-        const timer = setTimeout(() => {
+      if (!timers.current.has(toast.id)) {
+        const t = setTimeout(() => {
           onRemove(toast.id);
-          timersRef.current.delete(toast.id);
+          timers.current.delete(toast.id);
         }, duration);
-        timersRef.current.set(toast.id, timer);
+        timers.current.set(toast.id, t);
       }
     }
   }, [toasts, onRemove, duration]);
 
-  if (toasts.length === 0) return null;
+  if (!toasts.length) return null;
 
   return (
     <div className="fixed z-50 space-y-2 pointer-events-none bottom-4 left-4 right-4">
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`pointer-events-auto rounded-lg shadow-lg p-3 ${getToastStyles(toast.type)} text-white animate-slide-up`}
+          className={`pointer-events-auto rounded-lg shadow-lg p-3 text-white animate-slide-up ${STYLES[toast.type]}`}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-bold">{getIcon(toast.type)}</span>
+              <span className="font-bold">{ICONS[toast.type]}</span>
               <span className="text-sm">{toast.message}</span>
             </div>
             <button
               onClick={() => onRemove(toast.id)}
-              className="ml-3 text-white transition-opacity opacity-75 hover:opacity-100"
+              className="ml-3 opacity-75 hover:opacity-100"
             >
               ×
             </button>
@@ -70,30 +74,4 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
       ))}
     </div>
   );
-};
-
-const getToastStyles = (type: string): string => {
-  switch (type) {
-    case 'success':
-      return 'bg-green-500';
-    case 'error':
-      return 'bg-red-500';
-    case 'warning':
-      return 'bg-yellow-500';
-    default:
-      return 'bg-blue-500';
-  }
-};
-
-const getIcon = (type: string): string => {
-  switch (type) {
-    case 'success':
-      return '✓';
-    case 'error':
-      return '✗';
-    case 'warning':
-      return '⚠';
-    default:
-      return 'ℹ';
-  }
 };
