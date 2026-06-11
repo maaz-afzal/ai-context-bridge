@@ -11,7 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Debug - List files and show package.json
+        run: |
+          ls -la
+          echo "=== package.json content ==="
+          cat package.json
+          echo "=== Scripts section ==="
+          cat package.json | grep -A 10 '"scripts"'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -21,6 +32,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: List available scripts
+        run: npm run
 
       - name: Type check
         run: npm run type-check
