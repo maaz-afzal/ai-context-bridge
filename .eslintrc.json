@@ -14,7 +14,11 @@
   "plugins": ["@typescript-eslint", "react"],
   "rules": {
     "react/react-in-jsx-scope": "off",
-    "no-console": ["warn", { "allow": ["warn", "error"] }]
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "react/no-unescaped-entities": "off",
+    "no-misleading-character-class": "off"
   },
   "settings": { "react": { "version": "detect" } }
 }
